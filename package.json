@@ -1,0 +1,30 @@
+{
+  "name": "smeal-api",
+  "version": "1.0.0",
+  "description": "SEO analysis API with BullMQ and Express",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.19",
+    "axios": "^1.11.0",
+    "bullmq": "^5.13.0",
+    "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^4.21.0",
+    "ioredis": "^5.4.1",
+    "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.5.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  },
+  "author": "",
+  "license": "ISC"
+}
