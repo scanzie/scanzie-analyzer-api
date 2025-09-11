@@ -1,4 +1,4 @@
-import { pgTable, varchar, boolean, timestamp, text, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, varchar, boolean, timestamp, text, jsonb, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // User table
@@ -53,7 +53,7 @@ export const verification = pgTable("verification", {
 
 // SEO Analysis table
 export const seo_analysis = pgTable("seo_analysis", {
-  id: varchar("id", { length: 255 }).primaryKey(),
+  id: uuid().defaultRandom().primaryKey(),
   userId: varchar("userId", { length: 255 }).notNull().references(() => user.id, { onDelete: "cascade" }),
   title: varchar("title", { length: 255 }).notNull(),
   on_page: jsonb("on_page"),
@@ -90,6 +90,16 @@ export const seoAnalysisRelations = relations(seo_analysis, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+const schema = {
+    user,
+    session,
+    account,
+    verification,
+    seo_analysis
+}
+
+export default schema
 
 // Export types for TypeScript inference
 export type User = typeof user.$inferSelect;
