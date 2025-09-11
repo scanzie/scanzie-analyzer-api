@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv';
 import redis from './redis';
 import { authMiddleware, getUserId } from './middleware/auth';
 import progressRoutes from './routes/progress'
+import { user } from './schema';
 
 dotenv.config();
 
@@ -46,14 +47,17 @@ app.post('/api/analyze', async (req, res) => {
 
   try {
     const userId = getUserId(req); // Get the authenticated user ID
-    const jobIds = await addSEOAnalysisJobs(url, 10, userId); // Pass userId to jobs to store them
+    const trackingInfo = await addSEOAnalysisJobs(url, 10, userId);
+    console.log(`Analysis jobs queued by user ${userId}:`, trackingInfo);
     
-    console.log(`Analysis jobs queued by user ${userId}:`, jobIds);
-    res.json({ 
-      message: 'Analysis jobs queued', 
-      jobIds,
-      user: req.user?.email // Return user info for confirmation
+    res.json({
+      success: true,
+      userId,
+      message: 'Analysis jobs queued successfully',
+      sessionId: trackingInfo.sessionId,
+      trackingUrl: trackingInfo.trackingUrl
     });
+  
   } catch (error) {
     console.error('Failed to queue jobs:', error);
     res.status(500).json({ error: 'Failed to queue jobs' });
