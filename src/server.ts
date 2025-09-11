@@ -42,7 +42,7 @@ app.post('/api/analyze', async (req, res) => {
 
   try {
     const userId = getUserId(req); // Get the authenticated user ID
-    const jobIds = await addSEOAnalysisJobs(url, 10); // Pass userId to jobs to store them
+    const jobIds = await addSEOAnalysisJobs(url, 10, userId); // Pass userId to jobs to store them
     
     console.log(`Analysis jobs queued by user ${userId}:`, jobIds);
     res.json({ 

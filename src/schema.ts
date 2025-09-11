@@ -56,9 +56,9 @@ export const seo_analysis = pgTable("seo_analysis", {
   id: varchar("id", { length: 255 }).primaryKey(),
   userId: varchar("userId", { length: 255 }).notNull().references(() => user.id, { onDelete: "cascade" }),
   title: varchar("title", { length: 255 }).notNull(),
-  on_page: jsonb("on_page").notNull(),
-  content: jsonb("content").notNull(),
-  technical: jsonb("technical").notNull(),
+  on_page: jsonb("on_page"),
+  content: jsonb("content"),
+  technical: jsonb("technical"),
   createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
 });

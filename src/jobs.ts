@@ -10,17 +10,19 @@ import {
 // Interface for job data
 interface SEOJobData {
   url: string;
+  userId: string;
   timestamp: number;
   options: any;
   analysisType: 'on-page' | 'content' | 'technical';
 }
 
 // Function to add complete SEO analysis jobs
-export async function addSEOAnalysisJobs(url: string, priority: number = 0) {
+export async function addSEOAnalysisJobs(url: string, priority: number = 0, userId) {
   try {
     const jobData: Omit<SEOJobData, 'analysisType'> = {
       url,
       timestamp: Date.now(),
+      userId,
       options: {
         includeImages: true,
         checkMobileFriendly: true,

@@ -1,16 +1,8 @@
 // src/middleware/auth.ts
 import { Request, Response, NextFunction } from 'express';
-import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq, and, gt } from 'drizzle-orm';
-import { Pool } from 'pg';
 import { session, user } from '../schema'; // Adjust the import path to your schema file
-
-// Database connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-const db = drizzle(pool);
+import { db } from '../db';
 
 // Extend Express Request type to include user
 declare global {
