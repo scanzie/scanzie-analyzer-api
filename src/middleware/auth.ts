@@ -130,10 +130,10 @@ export const requireEmailVerified = (req: Request, res: Response, next: NextFunc
 
 // Helper function to extract user ID from request (useful in route handlers)
 export const getUserId = (req: Request): string => {
-  if (!req.user) {
+  if (!req.body.userId) {
     throw new Error('User not authenticated');
   }
-  return req.user.id;
+  return req.body.userId
 };
 
 // Helper function to create session token validation for WebSocket or other protocols
