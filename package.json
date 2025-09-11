@@ -17,9 +17,9 @@
     "express": "^4.21.2",
     "ioredis": "^5.7.0",
     "nodemon": "^3.1.10",
+    "@types/node": "^22.18.1"
   },
   "devDependencies": {
-    "@types/node": "^22.18.1",
     "@types/cheerio": "^0.22.35",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
