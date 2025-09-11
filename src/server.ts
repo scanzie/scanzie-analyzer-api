@@ -6,6 +6,7 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import redis from './redis';
 import { authMiddleware, getUserId } from './middleware/auth';
+import progressRoutes from './routes/progress'
 
 dotenv.config();
 
@@ -32,6 +33,9 @@ app.get('/health', async (req, res) => {
 // Protected routes (authentication required)
 app.use('/analyze', authMiddleware); 
 app.use('/results', authMiddleware); 
+
+// 
+app.use('/api', progressRoutes);
 
 // Endpoint to analyze a site (add all jobs) - PROTECTED
 app.post('/api/analyze', async (req, res) => {
