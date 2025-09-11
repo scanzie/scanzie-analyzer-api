@@ -16,6 +16,10 @@ app.use(cors({
   origin: process.env.NEXT_PUBLIC_FRONTEND_URL!
 }));
 
+app.get('/', async (req, res) => {
+  res.json({ message: "Welcome to Use-smeal Site analyzer"})
+})
+
 // Endpoint to analyze a site (add all jobs)
 app.post('/analyze', async (req, res) => {
   const { url } = req.body;
