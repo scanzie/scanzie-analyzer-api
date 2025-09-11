@@ -7,7 +7,7 @@ export class ContentAnalyzer {
   private text: string;
 
   constructor(html: string) {
-    this.$ = cheerio.load(html);
+    this.$ = cheerio.load(html) as cheerio.CheerioAPI;
     // Remove script, style, and navigation elements for content analysis
     this.$('script, style, nav, header, footer, aside').remove();
     this.text = this.$('body').text().replace(/\s+/g, ' ').trim();

@@ -11,7 +11,7 @@ export class TechnicalAnalyzer {
   constructor(html: string, url: string) {
     this.html = html;
     this.url = url;
-    this.$ = cheerio.load(html);
+    this.$ = cheerio.load(html) as cheerio.CheerioAPI;
   }
 
   async analyze(): Promise<TechnicalAnalysis> {

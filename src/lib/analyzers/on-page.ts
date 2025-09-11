@@ -7,7 +7,7 @@ export class OnPageAnalyzer {
   private url: string;
 
   constructor(html: string, url: string) {
-    this.$ = cheerio.load(html);
+    this.$ = cheerio.load(html) as cheerio.CheerioAPI;
     this.url = url;
   }
 
@@ -99,9 +99,9 @@ export class OnPageAnalyzer {
     headings.each((_, element) => {
       const $el = this.$(element);
       structure.push({
-        tag: (element.tagName?.toLowerCase()) || '',
+        tag: (element.data?.toLowerCase()) || '',
         text: $el.text().trim(),
-        level: parseInt(element.tagName?.charAt(1) || '0'),
+        level: parseInt(element.data?.charAt(1) || '0'),
       });
     });
 
