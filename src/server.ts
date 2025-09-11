@@ -32,7 +32,7 @@ app.use('/analyze', authMiddleware);
 app.use('/results', authMiddleware); 
 
 // Endpoint to analyze a site (add all jobs) - PROTECTED
-app.post('/analyze', async (req, res) => {
+app.post('/api/analyze', async (req, res) => {
   const { url } = req.body;
   if (!url) {
     return res.status(400).json({ error: 'URL is required' });
@@ -55,7 +55,7 @@ app.post('/analyze', async (req, res) => {
 });
 
 // Endpoint to add a single analysis job - PROTECTED
-app.post('/analyze/single', async (req, res) => {
+app.post('/api/analyze/single', async (req, res) => {
   const { type, url, options = {} } = req.body;
   if (!type || !url) {
     return res.status(400).json({ error: 'Type and URL are required' });
@@ -78,7 +78,7 @@ app.post('/analyze/single', async (req, res) => {
 });
 
 // Endpoint to fetch job results - PROTECTED
-app.get('/results/:jobId', async (req, res) => {
+app.get('/api/results/:jobId', async (req, res) => {
   const { jobId } = req.params;
   try {
     const userId = getUserId(req);
@@ -112,7 +112,7 @@ app.get('/results/:jobId', async (req, res) => {
 });
 
 // Endpoint to get user's job history - PROTECTED
-app.get('/user/jobs', async (req, res) => {
+app.get('/api/user/jobs', async (req, res) => {
   try {
     const userId = getUserId(req);
     
@@ -151,7 +151,7 @@ app.get('/user/jobs', async (req, res) => {
 });
 
 // Endpoint to get current user info - PROTECTED
-app.get('/user/me', async (req, res) => {
+app.get('/api/user/me', async (req, res) => {
   res.json({ 
     user: req.user,
     message: 'Authenticated successfully' 
