@@ -14,7 +14,8 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors({
-  origin: process.env.NEXT_PUBLIC_FRONTEND_URL!
+  origin: process.env.NEXT_PUBLIC_FRONTEND_URL!,
+  credentials: true
 }));
 
 // Public routes (no authentication required)
