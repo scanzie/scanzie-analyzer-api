@@ -1,4 +1,4 @@
-import { pgTable, varchar, boolean, timestamp, text } from "drizzle-orm/pg-core";
+import { pgTable, varchar, boolean, timestamp, text, jsonb } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // User table
@@ -51,10 +51,23 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// SEO Analysis table
+export const seo_analysis = pgTable("seo_analysis", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  userId: varchar("userId", { length: 255 }).notNull().references(() => user.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  on_page: jsonb("on_page").notNull(),
+  content: jsonb("content").notNull(),
+  technical: jsonb("technical").notNull(),
+  createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
+});
+
 // Define relations
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
+  seoAnalyses: many(seo_analysis),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -71,6 +84,13 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
+export const seoAnalysisRelations = relations(seo_analysis, ({ one }) => ({
+  user: one(user, {
+    fields: [seo_analysis.userId],
+    references: [user.id],
+  }),
+}));
+
 // Export types for TypeScript inference
 export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;
@@ -83,3 +103,6 @@ export type NewAccount = typeof account.$inferInsert;
 
 export type Verification = typeof verification.$inferSelect;
 export type NewVerification = typeof verification.$inferInsert;
+
+export type SeoAnalysis = typeof seo_analysis.$inferSelect;
+export type NewSeoAnalysis = typeof seo_analysis.$inferInsert;
