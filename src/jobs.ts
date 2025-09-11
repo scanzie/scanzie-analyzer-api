@@ -7,6 +7,8 @@ import {
   defaultJobOptions,
 } from './queues';
 
+import { v4 as uuidv4 } from 'uuid';
+
 // Interface for job data
 interface SEOJobData {
   url: string;
@@ -18,6 +20,7 @@ interface SEOJobData {
 
 // Function to add complete SEO analysis jobs
 export async function addSEOAnalysisJobs(url: string, priority: number = 0, userId) {
+  const sessionId = uuidv4();
   try {
     const jobData: Omit<SEOJobData, 'analysisType'> = {
       url,
@@ -31,7 +34,7 @@ export async function addSEOAnalysisJobs(url: string, priority: number = 0, user
 
     // Add on-page job
     const onPageJob = await onPageAnalysisQueue.add(
-      'analyze-on-page',
+      `on-page-${sessionId}`,
       { ...jobData, analysisType: 'on-page' as const },
       {
         ...defaultJobOptions,
@@ -42,7 +45,7 @@ export async function addSEOAnalysisJobs(url: string, priority: number = 0, user
 
     // Add content job
     const contentJob = await contentAnalysisQueue.add(
-      'analyze-content',
+      `content-${sessionId}`,
       { ...jobData, analysisType: 'content' as const },
       {
         ...defaultJobOptions,
@@ -53,7 +56,7 @@ export async function addSEOAnalysisJobs(url: string, priority: number = 0, user
 
     // Add technical job
     const technicalJob = await technicalAnalysisQueue.add(
-      'analyze-technical',
+      `technical-${sessionId}`,
       { ...jobData, analysisType: 'technical' as const },
       {
         ...defaultJobOptions,
@@ -69,9 +72,9 @@ export async function addSEOAnalysisJobs(url: string, priority: number = 0, user
     });
 
     return {
-      onPageJobId: onPageJob.id,
-      contentJobId: contentJob.id,
-      technicalJobId: technicalJob.id,
+      sessionId, 
+      jobIds: [onPageJob.id, contentJob.id, technicalJob.id],
+      trackingUrl: `/api/progress/${sessionId}?userId=${userId}`
     };
   } catch (error) {
     console.error('Error adding jobs:', error);
