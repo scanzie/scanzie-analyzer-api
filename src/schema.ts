@@ -56,6 +56,7 @@ export const seo_analysis = pgTable("seo_analysis", {
   id: uuid().defaultRandom().primaryKey(),
   userId: varchar("userId", { length: 255 }).notNull().references(() => user.id, { onDelete: "cascade" }),
   title: varchar("title", { length: 255 }).notNull(),
+  url: varchar("url", {length: 400}).notNull(),
   on_page: jsonb("on_page"),
   content: jsonb("content"),
   technical: jsonb("technical"),
