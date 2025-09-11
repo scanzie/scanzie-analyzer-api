@@ -99,9 +99,9 @@ export class OnPageAnalyzer {
     headings.each((_, element) => {
       const $el = this.$(element);
       structure.push({
-        tag: element.tagName.toLowerCase(),
+        tag: (element.tagName?.toLowerCase()) || '',
         text: $el.text().trim(),
-        level: parseInt(element.tagName.charAt(1)),
+        level: parseInt(element.tagName?.charAt(1) || '0'),
       });
     });
 
