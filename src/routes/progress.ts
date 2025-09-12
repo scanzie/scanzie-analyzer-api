@@ -67,7 +67,6 @@ router.get('/result/:userId/:url', async (req, res) => {
     
     // Decode URL if needed
     const decodedUrl = encodeURI(url);
-    console.log(url)
     
     // Query the database for complete analysis
     const result = await db

@@ -63,7 +63,7 @@ const storeResultInNeonDB = async (
       // Insert new record
       await db.insert(seo_analysis).values({
         userId,
-        url: encodeURIComponent(url),
+        url,
         title: `SEO analysis - ${url}`,
         on_page: type === 'on-page' ? result : null,
         content: type === 'content' ? result : null,
