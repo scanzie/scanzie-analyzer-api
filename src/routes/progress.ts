@@ -1,6 +1,5 @@
 // src/routes/progress.ts
 import express from 'express';
-import { Queue } from 'bullmq';
 import { seo_analysis } from '../schema';
 import { db } from '../db';
 import { and, eq } from 'drizzle-orm';
@@ -81,7 +80,7 @@ router.get('/result/:userId/:url', async (req, res) => {
       .limit(1);
 
     if (result.length === 0) {
-      return res.status(404).json({ error: 'Analysis not found' });
+      return res.status(400).json({ error: 'Analysis not found' });
     }
 
     const analysis = result[0];
@@ -91,6 +90,11 @@ router.get('/result/:userId/:url', async (req, res) => {
     const hasContent = analysis.content !== null;
     const hasTechnical = analysis.technical !== null;
     const isComplete = hasOnPage && hasContent && hasTechnical;
+
+    if(!analysis) {
+      res.status(400).json({ message: "Site analysis hasn't completed "})
+    }
+    
     res.json({
       userId,
       url: decodedUrl,
