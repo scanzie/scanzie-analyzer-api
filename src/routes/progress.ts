@@ -8,8 +8,6 @@ import { contentAnalysisQueue, onPageAnalysisQueue, technicalAnalysisQueue } fro
 
 const router = express.Router();
 
-
-
 // Get progress for a specific analysis session
 router.get('/progress/:sessionId', async (req, res) => {
   try {
@@ -36,7 +34,7 @@ router.get('/progress/:sessionId', async (req, res) => {
       const state = await job.getState(); // Accurate state: 'completed', 'failed', 'active', 'waiting', etc.
       return {
         type: types[index],
-        status: job.failedReason ? 'failed' : (state === 'completed' ? 'completed' : (state === 'active' || job.progress > 0 ? 'processing' : 'waiting')),
+        status: job.failedReason ? 'failed' : (state === 'completed' ? 'completed' : (state === 'active' || Number(job.progress) > 0 ? 'processing' : 'waiting')),
         progress: typeof job.progress === 'number' ? job.progress : 0,
         jobId: job.id,
         error: job.failedReason
@@ -62,6 +60,54 @@ router.get('/progress/:sessionId', async (req, res) => {
   }
 });
 
-// ... (keep your /result endpoint as is)
+// Get stored analysis result (alternative to job queue tracking)
+router.get('/result/:userId/:url', async (req, res) => {
+  try {
+    const { userId, url } = req.params;
+    
+    // Decode URL if needed
+    const decodedUrl = decodeURIComponent(url);
+    
+    // Query the database for complete analysis
+    const result = await db
+      .select()
+      .from(seo_analysis)
+      .where(
+        and(
+          eq(seo_analysis.userId, userId),
+          eq(seo_analysis.url, decodedUrl)
+        )
+      )
+      .limit(1);
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'Analysis not found' });
+    }
+
+    const analysis = result[0];
+    
+    // Check if all three analyses are complete
+    const hasOnPage = analysis.on_page !== null;
+    const hasContent = analysis.content !== null;
+    const hasTechnical = analysis.technical !== null;
+    const isComplete = hasOnPage && hasContent && hasTechnical;
+    res.json({
+      userId,
+      url: decodedUrl,
+      isComplete,
+      progress: isComplete ? 100 : Math.round(
+        (Number(hasOnPage) + Number(hasContent) + Number(hasTechnical)) * 33.33
+      ),
+      analysis: {
+        on_page: analysis.on_page,
+        content: analysis.content,
+        technical: analysis.technical
+      }
+    });
+  } catch (error) {
+    console.error('Result query error:', error);
+    res.status(500).json({ error: 'Failed to get analysis result' });
+  }
+});
 
 export default router;
