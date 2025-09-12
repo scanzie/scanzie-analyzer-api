@@ -38,8 +38,9 @@ export async function addSEOAnalysisJobs(url: string, priority: number = 0, user
       { ...jobData, analysisType: 'on-page' as const },
       {
         ...defaultJobOptions,
-        priority, // Higher numbers = higher priority
-        delay: 0, // Start immediately
+        priority, 
+        delay: 0, 
+        jobId: sessionId
       }
     );
 
@@ -50,7 +51,8 @@ export async function addSEOAnalysisJobs(url: string, priority: number = 0, user
       {
         ...defaultJobOptions,
         priority,
-        delay: 1000, // Start 1 second after on-page
+        delay: 1000,
+        jobId: sessionId
       }
     );
 
@@ -61,7 +63,8 @@ export async function addSEOAnalysisJobs(url: string, priority: number = 0, user
       {
         ...defaultJobOptions,
         priority,
-        delay: 2000, // Start 2 seconds after on-page
+        delay: 2000, 
+        jobId: sessionId
       }
     );
 

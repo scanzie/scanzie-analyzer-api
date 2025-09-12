@@ -18,11 +18,9 @@ router.get('/progress/:sessionId', async (req, res) => {
     }
 
     // Get jobs from their respective queues
-    const [onPageJob, contentJob, technicalJob] = await Promise.all([
-      onPageAnalysisQueue.getJob(`on-page-${sessionId}`),
-      contentAnalysisQueue.getJob(`content-${sessionId}`),
-      technicalAnalysisQueue.getJob(`technical-${sessionId}`)
-    ]);
+    const onPageJob = await onPageAnalysisQueue.getJob(`${sessionId}`)
+    const contentJob = await contentAnalysisQueue.getJob(`${sessionId}`)
+    const technicalJob = await technicalAnalysisQueue.getJob(`${sessionId}`)
 
     const jobs = [onPageJob, contentJob, technicalJob];
     const types = ['on-page', 'content', 'technical'];
@@ -39,6 +37,7 @@ router.get('/progress/:sessionId', async (req, res) => {
         error: job.failedReason
       };
     }));
+
 
     const allCompleted = jobStatuses.every(job => job.status === 'completed');
     const totalProgress = Math.round(
@@ -94,7 +93,6 @@ router.get('/result/:userId/:url', async (req, res) => {
     if(!analysis) {
       res.status(400).json({ message: "Site analysis hasn't completed "})
     }
-    
     res.json({
       userId,
       url: decodedUrl,
