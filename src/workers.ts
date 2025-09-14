@@ -68,6 +68,7 @@ const storeResultInNeonDB = async (
         on_page: type === 'on-page' ? result : null,
         content: type === 'content' ? result : null,
         technical: type === 'technical' ? result : null,
+        updatedAt: new Date(),
       });
       console.log(`Inserted ${type} analysis for ${url} in DB`);
     }
