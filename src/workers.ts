@@ -56,6 +56,7 @@ const storeResultInNeonDB = async (
           on_page: type === 'on-page' ? result : existingRecord[0].on_page,
           content: type === 'content' ? result : existingRecord[0].content,
           technical: type === 'technical' ? result : existingRecord[0].technical,
+          updatedAt: new Date(),
         })
         .where(and(eq(seo_analysis.userId, userId), eq(seo_analysis.url, url)));
       console.log(`Updated ${type} analysis for ${url} in DB`);
@@ -68,7 +69,6 @@ const storeResultInNeonDB = async (
         on_page: type === 'on-page' ? result : null,
         content: type === 'content' ? result : null,
         technical: type === 'technical' ? result : null,
-        updatedAt: new Date(),
       });
       console.log(`Inserted ${type} analysis for ${url} in DB`);
     }
