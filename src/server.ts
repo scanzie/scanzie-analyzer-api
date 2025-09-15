@@ -7,7 +7,6 @@ import * as dotenv from 'dotenv';
 import redis from './redis';
 import { authMiddleware, getUserId } from './middleware/auth';
 import progressRoutes from './routes/progress'
-import { user } from './schema';
 
 dotenv.config();
 
