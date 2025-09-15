@@ -45,6 +45,12 @@ export interface OnPageAnalysis {
     score: number;
     issues: string[];
   };
+  favicon: {
+    url: string | null;
+    exists: boolean;
+    score: number;
+    issues: string[];
+  };
 }
 
 export interface ContentAnalysis {
