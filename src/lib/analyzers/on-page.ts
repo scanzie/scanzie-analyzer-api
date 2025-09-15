@@ -18,6 +18,7 @@ export class OnPageAnalyzer {
       headings: await this.analyzeHeadings(),
       images: await this.analyzeImages(),
       links: await this.analyzeLinks(),
+      favicon: await this.analyzeFavicon(),
     };
   }
 
@@ -207,6 +208,86 @@ export class OnPageAnalyzer {
       internal,
       external,
       broken,
+      score: Math.max(0, score),
+      issues,
+    };
+  }
+
+  private async analyzeFavicon() {
+    const issues: string[] = [];
+    let score = 100;
+    let faviconUrl: string | null = null;
+    let exists = false;
+
+    try {
+      const baseUrl = new URL(this.url);
+      
+      // Check for various favicon link tags
+      const faviconSelectors = [
+        'link[rel="icon"]',
+        'link[rel="shortcut icon"]',
+        'link[rel="apple-touch-icon"]',
+        'link[rel="apple-touch-icon-precomposed"]'
+      ];
+
+      for (const selector of faviconSelectors) {
+        const faviconLink = this.$(selector).first();
+        if (faviconLink.length > 0) {
+          let href = faviconLink.attr('href');
+          if (href) {
+            // Convert relative URLs to absolute
+            if (href.startsWith('/')) {
+              faviconUrl = `${baseUrl.protocol}//${baseUrl.host}${href}`;
+            } else if (!href.startsWith('http')) {
+              faviconUrl = `${baseUrl.protocol}//${baseUrl.host}/${href}`;
+            } else {
+              faviconUrl = href;
+            }
+            exists = true;
+            break;
+          }
+        }
+      }
+
+      // If no favicon link tag found, check for default favicon.ico
+      if (!faviconUrl) {
+        faviconUrl = `${baseUrl.protocol}//${baseUrl.host}/favicon.ico`;
+        // Note: We can't actually check if this exists without making an HTTP request
+        // This would need to be done separately if you want to verify accessibility
+      }
+
+      if (!exists) {
+        issues.push('No favicon link tag found in HTML');
+        score -= 20;
+        issues.push('Consider adding <link rel="icon" href="/favicon.ico"> to <head>');
+      }
+
+      // Check for multiple sizes (good practice)
+      const appleTouchIcons = this.$('link[rel="apple-touch-icon"]').length;
+      const regularIcons = this.$('link[rel="icon"]').length;
+      
+      if (exists && appleTouchIcons === 0) {
+        issues.push('Consider adding Apple touch icons for better mobile support');
+        score -= 10;
+      }
+
+      if (exists && regularIcons === 1) {
+        const iconLink = this.$('link[rel="icon"]').first();
+        const sizes = iconLink.attr('sizes');
+        if (!sizes) {
+          issues.push('Consider specifying favicon sizes attribute');
+          score -= 5;
+        }
+      }
+
+    } catch (error) {
+      issues.push('Error analyzing favicon');
+      score = 50;
+    }
+
+    return {
+      exists,
+      url: faviconUrl,
       score: Math.max(0, score),
       issues,
     };
