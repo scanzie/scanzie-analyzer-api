@@ -51,6 +51,9 @@ export interface OnPageAnalysis {
     score: number;
     issues: string[];
   };
+  openGraph: {},
+  twitterCard: {};
+  overallScore: number;
 }
 
 export interface ContentAnalysis {

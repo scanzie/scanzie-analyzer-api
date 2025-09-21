@@ -127,10 +127,13 @@ export class OnPageAnalyzer {
     const structure: Array<{ tag: string; text: string; level: number }> = [];
     headings.each((_, element) => {
       const $el = this.$(element);
+      const nativeEl = element as any;
+      const tag = nativeEl && nativeEl.tagName ? String(nativeEl.tagName).toLowerCase() : '';
+      const level = tag && tag.length > 1 ? parseInt(tag.charAt(1)) : 0;
       structure.push({
-        tag: (element.tagName?.toLowerCase()) || '',
+        tag,
         text: $el.text().trim(),
-        level: parseInt(element.tagName?.charAt(1) || '0'),
+        level,
       });
     });
 
