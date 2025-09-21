@@ -11,6 +11,9 @@ export class ContentAnalyzer {
     // Remove script, style, and navigation elements for content analysis
     this.$('script, style, nav, header, footer, aside').remove();
     this.text = this.$('body').text().replace(/\s+/g, ' ').trim();
+    if (!this.text) {
+      throw new Error('No meaningful content after cleaning');
+    }
   }
 
   async analyze(): Promise<ContentAnalysis> {
@@ -30,17 +33,14 @@ export class ContentAnalyzer {
     
     if (wordCount < 300) {
       issues.push('Content too short (recommended: 300+ words)');
-      score -= 20;
     }
 
     if (readabilityScore < 60) {
       issues.push('Content may be difficult to read');
-      score -= 15;
     }
 
     if (contentQuality.score < 70) {
       issues.push('Content quality could be improved');
-      score -= 10;
     }
 
     return {
@@ -64,7 +64,7 @@ export class ContentAnalyzer {
     const sentences = this.text.split(/[.!?]+/).filter(s => s.trim().length > 0);
     const syllables = this.countSyllables(this.text);
 
-    if (sentences.length === 0 || words.length === 0) return 0;
+    if (sentences.length === 0 || words.length === 0) return 50; // Default for minimal content
 
     const avgWordsPerSentence = words.length / sentences.length;
     const avgSyllablesPerWord = syllables / words.length;
@@ -161,12 +161,12 @@ export class ContentAnalyzer {
     const wordCount = this.getWordCount();
     
     // Length factor (0-100)
-    const lengthScore = Math.min(100, (wordCount / 1000) * 100);
+    const lengthScore = Math.max(10, Math.min(100, (wordCount / 1000) * 100));
     
     // Uniqueness factor (based on word variety)
     const uniqueWords = new Set(this.text.toLowerCase().split(/\s+/)).size;
     const totalWords = this.text.split(/\s+/).length;
-    const uniquenessScore = totalWords > 0 ? (uniqueWords / totalWords) * 100 : 0;
+    const uniquenessScore = totalWords > 0 ? (uniqueWords / totalWords) * 100 : 50;
     
     // Structure factor (based on headings and paragraphs)
     const headings = this.$('h1, h2, h3, h4, h5, h6').length;
@@ -193,12 +193,15 @@ export class ContentAnalyzer {
     let score = 100;
 
     // Penalize short content
-    if (wordCount < 300) score -= 30;
-    else if (wordCount < 500) score -= 15;
+    if (wordCount < 300) score -= 15;
+    else if (wordCount < 500) score -= 10;
 
     // Factor in readability
-    if (readabilityScore < 40) score -= 25;
-    else if (readabilityScore < 60) score -= 15;
+    if (readabilityScore < 40) score -= 15;
+    else if (readabilityScore < 60) score -= 10;
+
+    // Cap penalties to prevent excessive reduction
+    score = Math.max(20, score);
 
     // Factor in quality
     score = (score + qualityScore) / 2;

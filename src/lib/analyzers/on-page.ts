@@ -153,16 +153,16 @@ export class OnPageAnalyzer {
       score -= 15;
     }
 
-    // Check heading hierarchy
+    // Check heading hierarchy (report only first occurrence)
     let previousLevel = 0;
-    structure.forEach(({ level }) => {
+    for (const { level } of structure) {
       if (level > previousLevel + 1) {
-        issues.push('Heading hierarchy not properly structured');
-        score -= 10;
-        return;
+      issues.push('Heading hierarchy not properly structured');
+      score -= 10;
+      break; // stop after reporting once
       }
       previousLevel = level;
-    });
+    }
 
     return {
       h1Count,
