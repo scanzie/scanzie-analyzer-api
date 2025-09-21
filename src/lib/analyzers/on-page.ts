@@ -12,13 +12,41 @@ export class OnPageAnalyzer {
   }
 
   async analyze(): Promise<OnPageAnalysis> {
+    const title = await this.analyzeTitle();
+    const metaDescription = await this.analyzeMetaDescription();
+    const headings = await this.analyzeHeadings();
+    const images = await this.analyzeImages();
+    const links = await this.analyzeLinks();
+    const favicon = await this.analyzeFavicon();
+    const openGraph = await this.analyzeOpenGraph();
+    const twitterCard = await this.analyzeTwitterCard();
+
+    // Calculate overall score
+    const scores = [
+      { score: title.score, weight: 0.2 },
+      { score: metaDescription.score, weight: 0.15 },
+      { score: headings.score, weight: 0.15 },
+      { score: images.score, weight: 0.1 },
+      { score: links.score, weight: 0.1 },
+      { score: favicon.score, weight: 0.05 },
+      { score: openGraph.score, weight: 0.15 },
+      { score: twitterCard.score, weight: 0.1 }
+    ];
+
+    const overallScore = Math.round(
+      scores.reduce((total, { score, weight }) => total + (score * weight), 0)
+    );
+
     return {
-      title: await this.analyzeTitle(),
-      metaDescription: await this.analyzeMetaDescription(),
-      headings: await this.analyzeHeadings(),
-      images: await this.analyzeImages(),
-      links: await this.analyzeLinks(),
-      favicon: await this.analyzeFavicon(),
+      title,
+      metaDescription,
+      headings,
+      images,
+      links,
+      favicon,
+      openGraph,
+      twitterCard,
+      overallScore
     };
   }
 
@@ -100,9 +128,9 @@ export class OnPageAnalyzer {
     headings.each((_, element) => {
       const $el = this.$(element);
       structure.push({
-        tag: (element.data?.toLowerCase()) || '',
+        tag: (element.tagName?.toLowerCase()) || '',
         text: $el.text().trim(),
-        level: parseInt(element.data?.charAt(1) || '0'),
+        level: parseInt(element.tagName?.charAt(1) || '0'),
       });
     });
 
@@ -288,6 +316,163 @@ export class OnPageAnalyzer {
     return {
       exists,
       url: faviconUrl,
+      score: Math.max(0, score),
+      issues,
+    };
+  }
+
+  private async analyzeOpenGraph() {
+    const issues: string[] = [];
+    let score = 100;
+    
+    // Essential OpenGraph tags
+    const ogTitle = this.$('meta[property="og:title"]').attr('content') || '';
+    const ogDescription = this.$('meta[property="og:description"]').attr('content') || '';
+    const ogImage = this.$('meta[property="og:image"]').attr('content') || '';
+    const ogUrl = this.$('meta[property="og:url"]').attr('content') || '';
+    const ogType = this.$('meta[property="og:type"]').attr('content') || '';
+    const ogSiteName = this.$('meta[property="og:site_name"]').attr('content') || '';
+
+    // Optional but recommended tags
+    const ogImageWidth = this.$('meta[property="og:image:width"]').attr('content') || '';
+    const ogImageHeight = this.$('meta[property="og:image:height"]').attr('content') || '';
+    const ogImageAlt = this.$('meta[property="og:image:alt"]').attr('content') || '';
+    const ogLocale = this.$('meta[property="og:locale"]').attr('content') || '';
+
+    // Check essential tags
+    if (!ogTitle) {
+      issues.push('Missing og:title meta tag');
+      score -= 20;
+    } else if (ogTitle.length > 60) {
+      issues.push('og:title too long (recommended: under 60 characters)');
+      score -= 10;
+    }
+
+    if (!ogDescription) {
+      issues.push('Missing og:description meta tag');
+      score -= 20;
+    } else if (ogDescription.length > 160) {
+      issues.push('og:description too long (recommended: under 160 characters)');
+      score -= 10;
+    }
+
+    if (!ogImage) {
+      issues.push('Missing og:image meta tag');
+      score -= 15;
+    } else {
+      if (!ogImageWidth || !ogImageHeight) {
+        issues.push('Consider adding og:image:width and og:image:height');
+        score -= 5;
+      }
+      if (!ogImageAlt) {
+        issues.push('Missing og:image:alt for accessibility');
+        score -= 5;
+      }
+    }
+
+    if (!ogUrl) {
+      issues.push('Missing og:url meta tag');
+      score -= 10;
+    }
+
+    if (!ogType) {
+      issues.push('Missing og:type meta tag');
+      score -= 10;
+    }
+
+    if (!ogSiteName) {
+      issues.push('Consider adding og:site_name meta tag');
+      score -= 5;
+    }
+
+    if (!ogLocale) {
+      issues.push('Consider adding og:locale meta tag');
+      score -= 5;
+    }
+
+    return {
+      title: ogTitle || undefined,
+      description: ogDescription || undefined,
+      image: ogImage || undefined,
+      url: ogUrl || undefined,
+      type: ogType || undefined,
+      siteName: ogSiteName || undefined,
+      imageWidth: ogImageWidth || undefined,
+      imageHeight: ogImageHeight || undefined,
+      imageAlt: ogImageAlt || undefined,
+      locale: ogLocale || undefined,
+      score: Math.max(0, score),
+      issues,
+    };
+  }
+
+  private async analyzeTwitterCard() {
+    const issues: string[] = [];
+    let score = 100;
+    
+    // Twitter Card tags
+    const twitterCard = this.$('meta[name="twitter:card"]').attr('content') || '';
+    const twitterTitle = this.$('meta[name="twitter:title"]').attr('content') || '';
+    const twitterDescription = this.$('meta[name="twitter:description"]').attr('content') || '';
+    const twitterImage = this.$('meta[name="twitter:image"]').attr('content') || '';
+    const twitterSite = this.$('meta[name="twitter:site"]').attr('content') || '';
+    const twitterCreator = this.$('meta[name="twitter:creator"]').attr('content') || '';
+    const twitterImageAlt = this.$('meta[name="twitter:image:alt"]').attr('content') || '';
+
+    // Check essential tags
+    if (!twitterCard) {
+      issues.push('Missing twitter:card meta tag');
+      score -= 20;
+    } else {
+      const validCardTypes = ['summary', 'summary_large_image', 'app', 'player'];
+      if (!validCardTypes.includes(twitterCard)) {
+        issues.push('Invalid twitter:card type (use: summary, summary_large_image, app, or player)');
+        score -= 15;
+      }
+    }
+
+    if (!twitterTitle) {
+      issues.push('Missing twitter:title meta tag');
+      score -= 15;
+    } else if (twitterTitle.length > 70) {
+      issues.push('twitter:title too long (recommended: under 70 characters)');
+      score -= 10;
+    }
+
+    if (!twitterDescription) {
+      issues.push('Missing twitter:description meta tag');
+      score -= 15;
+    } else if (twitterDescription.length > 200) {
+      issues.push('twitter:description too long (recommended: under 200 characters)');
+      score -= 10;
+    }
+
+    if (!twitterImage) {
+      issues.push('Missing twitter:image meta tag');
+      score -= 15;
+    } else if (!twitterImageAlt) {
+      issues.push('Missing twitter:image:alt for accessibility');
+      score -= 10;
+    }
+
+    if (!twitterSite) {
+      issues.push('Consider adding twitter:site meta tag');
+      score -= 10;
+    }
+
+    if (!twitterCreator) {
+      issues.push('Consider adding twitter:creator meta tag');
+      score -= 5;
+    }
+
+    return {
+      card: twitterCard || undefined,
+      title: twitterTitle || undefined,
+      description: twitterDescription || undefined,
+      image: twitterImage || undefined,
+      imageAlt: twitterImageAlt || undefined,
+      site: twitterSite || undefined,
+      creator: twitterCreator || undefined,
       score: Math.max(0, score),
       issues,
     };
