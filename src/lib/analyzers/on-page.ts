@@ -46,7 +46,7 @@ export class OnPageAnalyzer {
       favicon,
       openGraph,
       twitterCard,
-      overallScore
+      score: overallScore
     };
   }
 

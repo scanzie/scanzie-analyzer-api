@@ -53,7 +53,7 @@ export interface OnPageAnalysis {
   };
   openGraph: {},
   twitterCard: {};
-  overallScore: number;
+  score: number;
 }
 
 export interface ContentAnalysis {
