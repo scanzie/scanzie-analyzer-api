@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv';
 import redis from './redis';
 import { authMiddleware, getUserId } from './middleware/auth';
 import progressRoutes from './routes/progress'
+import errorMiddleware from './middleware/error';
 
 dotenv.config();
 
@@ -168,13 +169,7 @@ app.get('/api/user/me', async (req, res) => {
 });
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Global error handler:', err);
-  res.status(500).json({ 
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-  });
-});
+app.use(errorMiddleware);
 
 // 404 handler
 app.use('*', (req, res) => {
