@@ -1,14 +1,13 @@
 // src/server.ts
 import express from 'express';
-import { addSEOAnalysisJobs, addSingleAnalysisJob } from './jobs';
 import './workers';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
-import redis from './redis';
-import { authMiddleware, getUserId } from './middleware/auth';
+import { authMiddleware } from './middleware/auth';
 import progressRoutes from './routes/progress'
 import userRoutes from './routes/user';
 import analyzerRoutes from './routes/analyzer';
+import resultRoutes from './routes/result';
 import errorMiddleware from './middleware/error';
 
 dotenv.config();
@@ -48,40 +47,8 @@ app.post('/api/analyze', analyzerRoutes);
 // User Route
 app.get('/api/user', userRoutes);
 
-
-// Endpoint to fetch job results - PROTECTED
-app.get('/api/results/:jobId', async (req, res) => {
-  const { jobId } = req.params;
-  try {
-    const userId = getUserId(req);
-    
-    // Get job metadata to verify ownership
-    const jobMeta = await redis.get(`job:meta:${jobId}`);
-    if (jobMeta) {
-      const meta = JSON.parse(jobMeta);
-      if (meta.userId && meta.userId !== userId) {
-        return res.status(403).json({ 
-          error: 'Access denied', 
-          message: 'You can only access your own analysis results' 
-        });
-      }
-    }
-
-    const result = await redis.get(`job:result:${jobId}`);
-    if (!result) {
-      return res.status(404).json({ error: 'Result not found or still processing' });
-    }
-    
-    res.json({ 
-      jobId, 
-      result: JSON.parse(result),
-      user: req.user?.email
-    });
-  } catch (error) {
-    console.error('Failed to fetch job result:', error);
-    res.status(500).json({ error: 'Failed to fetch job result' });
-  }
-});
+// Result Route
+app.use('api/results', resultRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
