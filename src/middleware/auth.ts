@@ -72,33 +72,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     }
 
     const { user: userData, session: sessionInfo } = sessionData[0];
-
-    // Optional: Check if user's email is verified (uncomment if needed)
-    // if (!userData.emailVerified) {
-    //   return res.status(403).json({ 
-    //     error: 'Email not verified', 
-    //     message: 'Please verify your email before accessing this resource' 
-    //   });
-    // }
-
-    // Optional: IP address validation (uncomment if you want to validate IP)
-    // const clientIP = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'];
-    // if (sessionInfo.ipAddress && sessionInfo.ipAddress !== clientIP) {
-    //   return res.status(401).json({ 
-    //     error: 'Session IP mismatch', 
-    //     message: 'Please log in again from this location' 
-    //   });
-    // }
-
     // Add user data to request object
     req.user = userData;
-
-    // Update session's last activity (optional)
-    // await db
-    //   .update(session)
-    //   .set({ updatedAt: new Date() })
-    //   .where(eq(session.id, sessionInfo.id));
-
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);

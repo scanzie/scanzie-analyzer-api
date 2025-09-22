@@ -4,7 +4,7 @@ import { addSEOAnalysisJobs, addSingleAnalysisJob } from "../jobs";
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
   const { url } = req.body;
   if (!url) {
     return res.status(400).json({ error: 'URL is required' });

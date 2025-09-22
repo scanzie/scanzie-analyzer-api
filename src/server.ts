@@ -42,10 +42,10 @@ app.get('/health', async (req, res) => {
 app.use('/api/progress', progressRoutes);
 
 // Analyzer Route
-app.post('/api/analyze', analyzerRoutes);
+app.use('/api/analyze', analyzerRoutes);
 
 // User Route
-app.get('/api/user', userRoutes);
+app.use('/api/user', userRoutes);
 
 // Result Route
 app.use('api/results', resultRoutes);
