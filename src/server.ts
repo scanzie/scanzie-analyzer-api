@@ -1,6 +1,6 @@
 // src/server.ts
 import express from 'express';
-import './workers';
+import './bullmq/workers';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 import { authMiddleware } from './middleware/auth';

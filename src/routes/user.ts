@@ -1,6 +1,6 @@
 import express from "express";
 import { getUserId } from "../middleware/auth";
-import redis from "../redis";
+import redis from "../database/redis";
 
 const router = express.Router();
 

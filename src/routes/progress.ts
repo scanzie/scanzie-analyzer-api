@@ -1,6 +1,6 @@
 // src/routes/progress.ts
 import express from 'express';
-import { contentAnalysisQueue, onPageAnalysisQueue, technicalAnalysisQueue } from '../queues';
+import { contentAnalysisQueue, onPageAnalysisQueue, technicalAnalysisQueue } from '../bullmq/queues';
 
 const router = express.Router();
 

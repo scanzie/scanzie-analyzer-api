@@ -1,7 +1,7 @@
 // src/queues.ts
 
 import { Queue } from 'bullmq';
-import redis from './redis';
+import redis from '../database/redis';
 
 // Default job options
 export const defaultJobOptions = {

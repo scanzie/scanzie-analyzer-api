@@ -1,6 +1,6 @@
 import express from "express";
 import { getUserId } from "../middleware/auth";
-import { addSEOAnalysisJobs, addSingleAnalysisJob } from "../jobs";
+import { addSEOAnalysisJobs, addSingleAnalysisJob } from "../bullmq/jobs";
 
 const router = express.Router();
 
