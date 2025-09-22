@@ -1,6 +1,5 @@
 import express from "express";
 import { getUserId } from "../middleware/auth";
-import redis from "../redis";
 import { addSEOAnalysisJobs, addSingleAnalysisJob } from "../jobs";
 
 const router = express.Router();

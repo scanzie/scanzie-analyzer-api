@@ -1,14 +1,11 @@
 // src/routes/progress.ts
 import express from 'express';
-import { seo_analysis } from '../schema';
-import { db } from '../db';
-import { and, eq } from 'drizzle-orm';
 import { contentAnalysisQueue, onPageAnalysisQueue, technicalAnalysisQueue } from '../queues';
 
 const router = express.Router();
 
 // Get progress for a specific analysis session
-router.get('/progress/:sessionId', async (req, res) => {
+router.get('/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
     const { userId } = req.query;

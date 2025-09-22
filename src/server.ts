@@ -39,7 +39,7 @@ app.get('/health', async (req, res) => {
 });
 
 // Progress Route
-app.use('/api', progressRoutes);
+app.use('/api/progress', progressRoutes);
 
 // Analyzer Route
 app.post('/api/analyze', analyzerRoutes);
