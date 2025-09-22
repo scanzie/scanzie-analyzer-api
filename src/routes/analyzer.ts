@@ -13,7 +13,6 @@ router.post('/', async (req, res) => {
   try {
     const userId = getUserId(req); // Get the authenticated user ID
     const trackingInfo = await addSEOAnalysisJobs(url, 10, userId);
-    console.log(`Analysis jobs queued by user ${userId}:`, trackingInfo);
     
     res.json({
       success: true,

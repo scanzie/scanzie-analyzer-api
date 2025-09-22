@@ -59,7 +59,6 @@ const storeResultInNeonDB = async (
           updatedAt: new Date(),
         })
         .where(and(eq(seo_analysis.userId, userId), eq(seo_analysis.url, url)));
-      console.log(`Updated ${type} analysis for ${url} in DB`);
     } else {
       // Insert new record
       await db.insert(seo_analysis).values({
@@ -70,7 +69,6 @@ const storeResultInNeonDB = async (
         content: type === 'content' ? result : null,
         technical: type === 'technical' ? result : null,
       });
-      console.log(`Inserted ${type} analysis for ${url} in DB`);
     }
   } catch (error) {
     console.error(`DB Operation Error for ${type} (${url}):`, error);
@@ -83,14 +81,11 @@ new Worker(
   'on-page-analysis',
   async (job: Job) => {
     const { url, userId, options } = job.data;
-    console.log(`Processing on-page analysis for ${url}`);
-    
     // Report 10% progress at start
     await job.updateProgress(10);
     
     try {
       const result = await performOnPageAnalysis(url, options);
-      console.log(`On-page analysis result:`, result);
       
       // Report 90% progress before storing
       await job.updateProgress(90);
@@ -115,13 +110,10 @@ new Worker(
   'content-analysis',
   async (job: Job) => {
     const { url, userId, options } = job.data;
-    console.log(`Processing content analysis for ${url}`);
-    
     await job.updateProgress(10);
     
     try {
       const result = await performContentAnalysis(url, options);
-      console.log(`Content analysis result:`, result);
       
       await job.updateProgress(90);
       await storeResult(job.id, result);
@@ -143,14 +135,10 @@ new Worker(
   'technical-analysis',
   async (job: Job) => {
     const { url, userId, options } = job.data;
-    console.log(`Processing technical analysis for ${url}`);
-    
     await job.updateProgress(10);
     
     try {
       const result = await performTechnicalAnalysis(url, options);
-      console.log(`Technical analysis result:`, result);
-      
       await job.updateProgress(90);
       await storeResult(job.id, result);
       await storeResultInNeonDB(userId, url, 'technical', result);

@@ -67,13 +67,6 @@ export async function addSEOAnalysisJobs(url: string, priority: number = 0, user
         jobId: sessionId
       }
     );
-
-    console.log('Jobs added:', {
-      onPage: onPageJob.id,
-      content: contentJob.id,
-      technical: technicalJob.id,
-    });
-
     return {
       sessionId, 
       jobIds: [onPageJob.id, contentJob.id, technicalJob.id],
