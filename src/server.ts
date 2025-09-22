@@ -8,6 +8,7 @@ import redis from './redis';
 import { authMiddleware, getUserId } from './middleware/auth';
 import progressRoutes from './routes/progress'
 import userRoutes from './routes/user';
+import analyzerRoutes from './routes/analyzer';
 import errorMiddleware from './middleware/error';
 
 dotenv.config();
@@ -23,6 +24,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']  // Add if custom headers
 }));
 
+// Middlewares
+app.use('/analyze', authMiddleware); 
+app.use('/results', authMiddleware); 
+app.use(errorMiddleware);
+
+
 // Public routes (no authentication required)
 app.get('/', async (req, res) => {
   res.json({ message: "Welcome to Use-smeal Site analyzer" });
@@ -32,61 +39,15 @@ app.get('/health', async (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Protected routes (authentication required)
-app.use('/analyze', authMiddleware); 
-app.use('/results', authMiddleware); 
-
-// 
+// Progress Route
 app.use('/api', progressRoutes);
 
-// Endpoint to analyze a site (add all jobs) - PROTECTED
-app.post('/api/analyze', async (req, res) => {
-  const { url } = req.body;
-  if (!url) {
-    return res.status(400).json({ error: 'URL is required' });
-  }
+// Analyzer Route
+app.post('/api/analyze', analyzerRoutes);
 
-  try {
-    const userId = getUserId(req); // Get the authenticated user ID
-    const trackingInfo = await addSEOAnalysisJobs(url, 10, userId);
-    console.log(`Analysis jobs queued by user ${userId}:`, trackingInfo);
-    
-    res.json({
-      success: true,
-      userId,
-      message: 'Analysis jobs queued successfully',
-      sessionId: trackingInfo.sessionId,
-      trackingUrl: trackingInfo.trackingUrl
-    });
-  
-  } catch (error) {
-    console.error('Failed to queue jobs:', error);
-    res.status(500).json({ error: 'Failed to queue jobs' });
-  }
-});
+// User Route
+app.get('/api/user', userRoutes);
 
-// Endpoint to add a single analysis job - PROTECTED
-app.post('/api/analyze/single', async (req, res) => {
-  const { type, url, options = {} } = req.body;
-  if (!type || !url) {
-    return res.status(400).json({ error: 'Type and URL are required' });
-  }
-
-  try {
-    const userId = getUserId(req);
-    const jobId = await addSingleAnalysisJob(type, url, { ...options, userId });
-    
-    console.log(`Single job queued by user ${userId}:`, jobId);
-    res.json({ 
-      message: 'Single analysis job queued', 
-      jobId,
-      user: req.user?.email
-    });
-  } catch (error) {
-    console.error('Failed to queue single job:', error);
-    res.status(500).json({ error: 'Failed to queue single job' });
-  }
-});
 
 // Endpoint to fetch job results - PROTECTED
 app.get('/api/results/:jobId', async (req, res) => {
@@ -122,13 +83,6 @@ app.get('/api/results/:jobId', async (req, res) => {
   }
 });
 
-// Endpoint to get user's job history - PROTECTED
-app.get('/api/user', userRoutes);
-
-
-// Error handling middleware
-app.use(errorMiddleware);
-
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ 
@@ -137,6 +91,7 @@ app.use('*', (req, res) => {
   });
 });
 
+// Start server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
