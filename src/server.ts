@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv';
 import redis from './redis';
 import { authMiddleware, getUserId } from './middleware/auth';
 import progressRoutes from './routes/progress'
+import userRoutes from './routes/user';
 import errorMiddleware from './middleware/error';
 
 dotenv.config();
@@ -122,51 +123,8 @@ app.get('/api/results/:jobId', async (req, res) => {
 });
 
 // Endpoint to get user's job history - PROTECTED
-app.get('/api/user/jobs', async (req, res) => {
-  try {
-    const userId = getUserId(req);
-    
-    // Get all job keys for this user
-    const pattern = `job:meta:*`;
-    const keys = await redis.keys(pattern);
-    
-    const userJobs: Array<{ jobId: string; [key: string]: any }> = [];
-    for (const key of keys) {
-      const meta = await redis.get(key);
-      if (meta) {
-        const jobMeta = JSON.parse(meta);
-        if (jobMeta.userId === userId) {
-          const jobId = key.replace('job:meta:', '');
-          userJobs.push({
-            jobId,
-            ...jobMeta,
-            createdAt: jobMeta.createdAt || new Date().toISOString()
-          });
-        }
-      }
-    }
-    
-    // Sort by creation date (newest first)
-    userJobs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    
-    res.json({ 
-      jobs: userJobs,
-      total: userJobs.length,
-      user: req.user?.email
-    });
-  } catch (error) {
-    console.error('Failed to fetch user jobs:', error);
-    res.status(500).json({ error: 'Failed to fetch user jobs' });
-  }
-});
+app.get('/api/user', userRoutes);
 
-// Endpoint to get current user info - PROTECTED
-app.get('/api/user/me', async (req, res) => {
-  res.json({ 
-    user: req.user,
-    message: 'Authenticated successfully' 
-  });
-});
 
 // Error handling middleware
 app.use(errorMiddleware);
