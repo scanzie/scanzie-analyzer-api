@@ -1,7 +1,7 @@
 import express from "express";
 import { getUserId } from "../middleware/auth";
 import { seo_analysis } from "../database/schema";
-import { db } from "../database/db";
+import { db } from "../database";
 import { eq, and } from "drizzle-orm";
 import redis from "../redis";
 

@@ -6,7 +6,7 @@ import {
   performContentAnalysis,
   performTechnicalAnalysis,
 } from '../lib/actions/seo-analysis';
-import { db } from '../database/db';
+import { db } from '../database';
 import { seo_analysis } from '../database/schema';
 import { eq, and } from 'drizzle-orm';
 import { config } from 'dotenv';

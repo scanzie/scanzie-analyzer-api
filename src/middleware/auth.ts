@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { eq, and, gt } from 'drizzle-orm';
 import { session, user } from '../database/schema'; // Adjust the import path to your schema file
-import { db } from '../database/db';
+import { db } from '../database';
 
 // Extend Express Request type to include user
 declare global {
