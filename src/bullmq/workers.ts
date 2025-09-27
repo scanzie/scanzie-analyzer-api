@@ -5,7 +5,7 @@ import {
   performOnPageAnalysis,
   performContentAnalysis,
   performTechnicalAnalysis,
-} from '../actions/seo-analysis';
+} from '../lib/actions/seo-analysis';
 import { db } from '../database/db';
 import { seo_analysis } from '../database/schema';
 import { eq, and } from 'drizzle-orm';
