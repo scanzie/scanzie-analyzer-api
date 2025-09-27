@@ -1,6 +1,6 @@
 // src/lib/analyzers/on-page.ts
 import * as cheerio from 'cheerio';
-import { OnPageAnalysis } from '../types';
+import { OnPageAnalysis } from '../../types';
 
 export class OnPageAnalyzer {
   private $: cheerio.CheerioAPI;

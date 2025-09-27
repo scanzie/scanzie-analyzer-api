@@ -1,7 +1,7 @@
 // src/lib/analyzers/technical.ts
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { TechnicalAnalysis } from '../types';
+import { TechnicalAnalysis } from '../../types';
 
 export class TechnicalAnalyzer {
   private url: string;

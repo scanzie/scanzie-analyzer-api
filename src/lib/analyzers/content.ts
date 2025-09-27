@@ -1,6 +1,6 @@
 // src/lib/analyzers/content.ts
 import * as cheerio from 'cheerio';
-import { ContentAnalysis } from '../types';
+import { ContentAnalysis } from '../../types';
 
 export class ContentAnalyzer {
   private $: cheerio.CheerioAPI;
