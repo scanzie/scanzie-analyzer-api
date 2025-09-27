@@ -1,80 +1,18 @@
 // src/workers.ts
 import { Worker, Job } from 'bullmq';
-import redis from '../redis';
 import {
   performOnPageAnalysis,
   performContentAnalysis,
   performTechnicalAnalysis,
-} from '../lib/actions/seo-analysis';
-import { db } from '../database';
-import { seo_analysis } from '../database/schema';
-import { eq, and } from 'drizzle-orm';
+} from '../actions/seo-analysis';
 import { config } from 'dotenv';
+import redis from '../redis';
+import { storeResult, storeResultInNeonDB } from '../actions/db';
+import { testConnection } from '../lib/db';
 
 config();
 
-// Optional: Log connection test
-const testConnection = async () => {
-  if (!process.env.DATABASE_URL) {
-    console.error('Missing DATABASE_URL env var - cannot connect to NeonDB');
-    process.exit(1);
-  }
-  try {
-    await db.select().from(seo_analysis).limit(0); // Ping query
-    console.log('NeonDB connection OK');
-  } catch (err) {
-    console.error('NeonDB connection failed:', err);
-  }
-};
 testConnection();
-
-// Store job results in Redis with a TTL of 1 hour (3600 seconds)
-const storeResult = async (jobId: string | undefined, result: any) => {
-  await redis.set(`job:result:${jobId}`, JSON.stringify(result), 'EX', 3600);
-};
-
-const storeResultInNeonDB = async (
-  userId: string,
-  url: string,
-  type: 'on-page' | 'content' | 'technical',
-  result: Object
-) => {
-  try {
-    // Check if a record exists for the userId and url
-    const existingRecord = await db
-      .select()
-      .from(seo_analysis)
-      .where(and(eq(seo_analysis.userId, userId), eq(seo_analysis.url, url)))
-      .limit(1);
-
-    if (existingRecord.length > 0) {
-      // Update existing record
-      await db
-        .update(seo_analysis)
-        .set({
-          title: `SEO analysis - ${url}`,
-          on_page: type === 'on-page' ? result : existingRecord[0].on_page,
-          content: type === 'content' ? result : existingRecord[0].content,
-          technical: type === 'technical' ? result : existingRecord[0].technical,
-          updatedAt: new Date(),
-        })
-        .where(and(eq(seo_analysis.userId, userId), eq(seo_analysis.url, url)));
-    } else {
-      // Insert new record
-      await db.insert(seo_analysis).values({
-        userId,
-        url,
-        title: `SEO analysis - ${url}`,
-        on_page: type === 'on-page' ? result : null,
-        content: type === 'content' ? result : null,
-        technical: type === 'technical' ? result : null,
-      });
-    }
-  } catch (error) {
-    console.error(`DB Operation Error for ${type} (${url}):`, error);
-    throw error; // Re-throw to let BullMQ mark job as failed/retry
-  }
-};
 
 // Worker for on-page analysis with progress tracking
 new Worker(

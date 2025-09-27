@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { OnPageAnalyzer } from '../analyzers/on-page';
-import { ContentAnalyzer } from '../analyzers/content';
-import { TechnicalAnalyzer } from '../analyzers/technical';
+import { OnPageAnalyzer } from './analyzers/on-page';
+import { ContentAnalyzer } from './analyzers/content';
+import { TechnicalAnalyzer } from './analyzers/technical';
 
 const validateUrl = (url: string) => {
   try {
