@@ -3,7 +3,7 @@ import { getUserId } from "../middleware/auth";
 import { seo_analysis } from "../database/schema";
 import { db } from "../database/db";
 import { eq, and } from "drizzle-orm";
-import redis from "../database/redis";
+import redis from "../redis";
 
 const router = express.Router();
 
