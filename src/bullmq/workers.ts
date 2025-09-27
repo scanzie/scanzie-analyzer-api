@@ -1,6 +1,6 @@
 // src/workers.ts
 import { Worker, Job } from 'bullmq';
-import redis from '../database/redis';
+import redis from '../redis';
 import {
   performOnPageAnalysis,
   performContentAnalysis,
