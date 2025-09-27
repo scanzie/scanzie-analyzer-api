@@ -1,5 +1,6 @@
 // src/jobs.ts
 
+import { SEOJobData } from '../types';
 import {
   onPageAnalysisQueue,
   contentAnalysisQueue,
@@ -10,13 +11,6 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 // Interface for job data
-interface SEOJobData {
-  url: string;
-  userId: string;
-  timestamp: number;
-  options: any;
-  analysisType: 'on-page' | 'content' | 'technical';
-}
 
 // Function to add complete SEO analysis jobs
 export async function addSEOAnalysisJobs(url: string, priority: number = 0, userId) {

@@ -1,5 +1,3 @@
-// src/lib/types.ts
-
 export interface SEOAnalysisRequest {
   url: string;
   userId?: string;
@@ -122,4 +120,12 @@ export interface SEOAnalysisResult {
   technical: TechnicalAnalysis;
   recommendations: string[];
   error?: string;
+}
+
+export interface SEOJobData {
+  url: string;
+  userId: string;
+  timestamp: number;
+  options: any;
+  analysisType: 'on-page' | 'content' | 'technical';
 }
