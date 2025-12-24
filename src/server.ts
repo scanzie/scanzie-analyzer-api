@@ -34,6 +34,9 @@ app.get('/', async (req, res) => {
   res.json({ message: "Welcome to Use-smeal Site analyzer" });
 });
 
+app.head('/health', async (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 app.get('/health', async (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
