@@ -7,7 +7,6 @@ const redis = new Redis({
     port: parseInt(process.env.REDIS_PORT!),
     maxRetriesPerRequest: null,
     password: process.env.REDIS_PASSWORD,
-    tls: {}
 });
 
 export default redis;
