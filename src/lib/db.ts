@@ -8,8 +8,8 @@ export const testConnection = async () => {
   }
   try {
     await db.select().from(seo_analysis).limit(0); // Ping query
-    console.log('NeonDB connection OK');
+    console.log("✅ NeonDB connection OK");
   } catch (err) {
-    console.error('NeonDB connection failed:', err);
+    console.error('❌ NeonDB connection failed:', err);
   }
 };
