@@ -6,9 +6,9 @@ export class ContentAnalyzer {
   private $: cheerio.CheerioAPI;
   private text: string;
 
+
   constructor(html: string) {
     this.$ = cheerio.load(html) as cheerio.CheerioAPI;
-    // Remove script, style, and navigation elements for content analysis
     this.$('script, style, nav, header, footer, aside').remove();
     this.text = this.$('body').text().replace(/\s+/g, ' ').trim();
     if (!this.text) {
@@ -17,6 +17,7 @@ export class ContentAnalyzer {
   }
 
   async analyze(): Promise<ContentAnalysis> {
+    console.log("SCrapped body text:", this.text);
     const wordCount = this.getWordCount();
     const readabilityScore = this.calculateReadabilityScore();
     const keywordDensity = this.calculateKeywordDensity();
@@ -59,7 +60,6 @@ export class ContentAnalyzer {
   }
 
   private calculateReadabilityScore(): number {
-    // Simplified Flesch Reading Ease formula
     const words = this.text.split(/\s+/).filter(word => word.length > 0);
     const sentences = this.text.split(/[.!?]+/).filter(s => s.trim().length > 0);
     const syllables = this.countSyllables(this.text);
@@ -74,7 +74,6 @@ export class ContentAnalyzer {
   }
 
   private countSyllables(text: string): number {
-    // Simple syllable counting (approximate)
     const words = text.toLowerCase().split(/\s+/);
     let totalSyllables = 0;
 
@@ -102,7 +101,6 @@ export class ContentAnalyzer {
       wordFrequency[word] = (wordFrequency[word] || 0) + 1;
     });
 
-    // Convert to density percentages and get top 10
     const density: Record<string, number> = {};
     Object.entries(wordFrequency)
       .sort(([, a], [, b]) => b - a)

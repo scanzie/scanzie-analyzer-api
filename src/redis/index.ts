@@ -1,10 +1,14 @@
 // src/redis.ts
 import Redis  from 'ioredis';
+import * as dotenv from 'dotenv';
+dotenv.config()
 
-// Create Redis connection
+const redisPort = parseInt(process.env.REDIS_PORT!);
+const redisHost = process.env.REDIS_HOST!;
+
 const redis = new Redis({
-    host: process.env.REDIS_HOST!,
-    port: parseInt(process.env.REDIS_PORT!),
+    host: redisHost,
+    port: redisPort,
     maxRetriesPerRequest: null,
     password: process.env.REDIS_PASSWORD,
 });
