@@ -9,6 +9,7 @@ import userRoutes from './routes/user';
 import analyzerRoutes from './routes/analyzer';
 import resultRoutes from './routes/result';
 import errorMiddleware from './middleware/error';
+import { arcjetMiddleware } from './middleware/arcjet';
 
 dotenv.config();
 
@@ -27,6 +28,9 @@ app.use(cors({
 app.use('/analyze', authMiddleware); 
 app.use('/results', authMiddleware); 
 app.use(errorMiddleware);
+
+// Ratelimiting and bot detection middleware
+app.use(arcjetMiddleware)
 
 
 // Public routes (no authentication required)

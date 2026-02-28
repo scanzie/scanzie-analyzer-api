@@ -9,6 +9,8 @@
     "dev": "nodemon"
   },
   "dependencies": {
+    "@arcjet/inspect": "^1.1.0",
+    "@arcjet/node": "^1.1.0",
     "@neondatabase/serverless": "^1.0.1",
     "@types/node": "^22.18.1",
     "@types/pg": "^8.15.5",
